@@ -30,6 +30,17 @@ var companySchema = new Schema({
     totalStock: Number
 });
 
+//在实体执行save方法执行前执行
+companySchema.pre('save', function(next){
+    var err = new Error('some error');
+    next(err);
+});
+
+//在实体remove方法执行后执行
+companySchema.post('remove', function(doc){
+    console.log('%s has been removed', doc._id);
+});
+
 companySchema.set('autoIndex', false);
 
 companySchema.statics.findByCode = function(code, cb){
@@ -41,7 +52,28 @@ companySchema.methods.findByAddr = function(cb){
     return this.model('companies').find({address: this.address}, cb);
 }
 
+
 var Company = mongoose.model('companies', companySchema);
+
+var c = new Company();
+c.remove();
+/*c.save(function(err){
+    console.log(err.message);
+});*/
+//Company.remove({_id: '552fb8d2e6c0462c1dbe8226'}, function(err){});
+
+/*
+var Company = mongoose.model('companies', companySchema);
+
+var query = Company.findOne({address: '上海'});
+
+query.select('code marketTime');
+query.exec(function(err, company){
+    if(err) return console.log(err);
+    console.log(company.code +  "  " + company.marketTime);
+});
+*/
+
 
 /*
 Company.findByCode('600620', function(err, company){
@@ -65,9 +97,9 @@ c1.save(function(err){
         console.log(company);
     })
 });*/
-Company.findByIdAndUpdate('552f4cd67b395f3c1d5f6834',{$set:{company:"123455"}}, function(err, company){
+/*Company.findByIdAndUpdate('552f4cd67b395f3c1d5f6834',{$set:{company:"123455"}}, function(err, company){
     console.log(company);
-});
+});*/
 
 /*
 Company.find({address:'上海', code:null}).exec(function(err, companies){
